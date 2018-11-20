@@ -6,11 +6,12 @@
 /*   By: tlesven <tlesven@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/04/16 12:48:44 by tlesven           #+#    #+#             */
-/*   Updated: 2015/04/01 15:48:26 by tlesven          ###   ########.fr       */
+/*   Updated: 2018/11/20 15:26:29 by tlesven          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include "libft.h"
 
 static	t_read		*ft_freeread(t_read *red, t_read *prev, t_read **start)
 {
@@ -32,17 +33,17 @@ static	t_read		*ft_newread(int fd)
 	void			*tmp;
 	int				ret;
 
-	if (!(red = (t_read *)malloc(sizeof(t_read))))
+	if (!(red = (t_read *)ft_memalloc(sizeof(t_read))))
 		return (NULL);
-	if (!(tmp = malloc(sizeof(char) * BUFF_SIZE)))
+	if (!(tmp = ft_memalloc(sizeof(char) * BUFF_SIZE)))
 	{
-		free(red);
+		ft_memdel((void**)&red);
 		return (NULL);
 	}
 	if ((ret = read(fd, tmp, BUFF_SIZE)) < 0)
 	{
-		free(red);
-		free(tmp);
+		ft_memdel((void**)&red);
+		ft_memdel((void**)&tmp);
 		return (NULL);
 	}
 	red->read = (char *)tmp;
@@ -53,7 +54,7 @@ static	t_read		*ft_newread(int fd)
 	return (red);
 }
 
-static	int			ft_print(int n, t_read **tab, t_read **s, char **l)
+int					ft_print(int n, t_read **tab, t_read **s, char **l)
 {
 	char			*tmpstr;
 	int				index;
@@ -61,7 +62,7 @@ static	int			ft_print(int n, t_read **tab, t_read **s, char **l)
 	if (!tab[0])
 		return (-1);
 	index = (tab[0])->index;
-	if (n == -1 || !(tmpstr = (char *)malloc(sizeof(char) * (n + 1))))
+	if (n == -1 || !(tmpstr = ft_strnew((n + 1))))
 		return (-1);
 	*l = tmpstr;
 	while (n--)
@@ -82,7 +83,7 @@ static	int			ft_print(int n, t_read **tab, t_read **s, char **l)
 	return (1);
 }
 
-static	int			ft_findendl(int fd, t_read *red)
+int					ft_findendl(int fd, t_read *red)
 {
 	int				index;
 	int				size;
