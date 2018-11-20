@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcharlat <tlesven@student.42.fr>           +#+  +:+       +#+        */
+/*   By: tlesven <tlesven@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/03 01:49:32 by tlesven           #+#    #+#             */
-/*   Updated: 2015/04/01 15:56:46 by tlesven          ###   ########.fr       */
+/*   Updated: 2018/11/20 19:12:56 by tlesven          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ int					get_next_line(int const fd, char **line);
 
 typedef struct		s_read
 {
-	int				size;
+	int				size; //Old Naming replace by len
+	int				len;
 	int				index;
 	int				fd;
 	char			*read;
