@@ -6,13 +6,13 @@
 /*   By: tlesven <tlesven@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/04/16 12:48:44 by tlesven           #+#    #+#             */
-/*   Updated: 2018/11/20 20:24:36 by tlesven          ###   ########.fr       */
+/*   Updated: 2018/11/22 21:22:09 by tlesven          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "libft.h"
-
+#include <stdio.h>
 /*static	t_read		*ft_freeread(t_read *red, t_read *prev, t_read **start)
 {
 	if (!prev)
@@ -140,58 +140,91 @@ int					get_next_line2(int fd, char **line)
 }
 */
 
-void				ft_newread(int fd, char *rad)
+void				ft_newread(t_read *fdlst)
 {
 	int		ret;
-	void	*buf;
+	char	*tmp;
+	char	buf[BUFF_SIZE + 1];
 
-	buf = ft_memalloc(sizeof(char) * BUFF_SIZE);
-	ret = read(fd, buf, BUFF_SIZE);
+	//ft_putendl("nextwreqd");
+	//if (ret = read(fdlst->fd, buf, BUFF_SIZE) < 0);
+	if ((ret = read(fdlst->fd, buf, BUFF_SIZE)) < 0)
+	{
+		fdlst->read = NULL;
+		return ;
+	}
+	if (ret < BUFF_SIZE)
+		fdlst->status = 1;
+//	printf("ret: %d\n", ret);
+	fdlst->len += ret;
+	if (!fdlst->read)
+	{
+		fdlst->read = ft_strndup((char*)buf, ret);
+	}
+	else
+	{
+		tmp = ft_strjoin(fdlst->read, ft_strndup((char*)buf, ret));
+		ft_strdel(&fdlst->read);
+		fdlst->read = tmp;
+	}
+	//ft_memdel(&buf);
+	return ;
 }
 
 static	t_read		*ft_newfd(int fd)
 {
 	t_read			*lst;
-	void			*buf;
-	int				ret;
 
 	if (!(lst = (t_read *)ft_memalloc(sizeof(t_read))))
 		return (NULL);
-	if (!(buf = ft_memalloc(sizeof(char) * BUFF_SIZE)))
-	{
-		ft_memdel((void**)&lst);
-		return (NULL);
-	}
-	if ((ret = read(fd, buf, BUFF_SIZE)) < 0)
-	{
-		ft_memdel((void**)&lst);
-		ft_memdel((void**)&buf);
-		return (NULL);
-	}
-	lst->read = (char *)buf;
 	lst->fd = fd;
-	lst->len = ret;
+	lst->len = 0;
+	lst->read = NULL;
+	lst->status = 2;
 	lst->next = NULL;
 	lst->index = 0;
+	ft_newread(lst);
+	if (!lst->read)
+	{
+		free(lst);
+		return (NULL);
+	}
 	return (lst);
 }
 
-int ft_findendline(t_read *fdlst)
+void	ft_findendline(t_read *fdlst, char **line)
 {
-	char	*endline;
-
-	while (!(endline = ft_strchr(fdlst->read, '\n')))
+	int		i;
+	i = fdlst->index;
+	while (!ft_strchr(&fdlst->read[i], '\n'))
 	{
-		
+		if (fdlst->status == 1)
+		{
+			//fdlst->status = 0;
+			//printf("index: %d \n len: %d \n", fdlst->index, fdlst->len);
+			if( fdlst->index < fdlst->len)
+			{
+				*line = ft_strndup(&fdlst->read[fdlst->index], fdlst->len - fdlst->index);
+				fdlst->index = fdlst->len + 1;
+			}
+			else
+				fdlst->status = 0;
+			return ;
+		}
+		ft_newread(fdlst);
 	}
-	return (0);
+	while (fdlst->read[i] != '\n')
+		i++;
+	*line = ft_strndup(&fdlst->read[fdlst->index], i - fdlst->index);
+	//*line = "coucou";
+	fdlst->index = i + 1;
+	return ;
 }
 
 int				get_next_line(int fd, char **line)
 {
 	static t_read	*start = NULL;
 	t_read			*fdlst;
-	(void)line;
 
 	if (fd < 0 || fd == 1 || BUFF_SIZE < 1)
 		return (-1);
@@ -210,6 +243,12 @@ int				get_next_line(int fd, char **line)
 		}
 		fdlst = fdlst->next;
 	}
+	//ft_newread(fdlst);
+	//*line = "coucou";
+	ft_findendline(fdlst, line);
+	if(fdlst->status >= 1)
+		return (1);
+	//ft_strdel(&fdlst->read);
 	return (0);//renvoyer le bon truc 
 }
 

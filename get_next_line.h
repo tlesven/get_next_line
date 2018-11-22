@@ -6,7 +6,7 @@
 /*   By: tlesven <tlesven@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/12/03 01:49:32 by tlesven           #+#    #+#             */
-/*   Updated: 2018/11/20 19:12:56 by tlesven          ###   ########.fr       */
+/*   Updated: 2018/11/22 17:47:42 by tlesven          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,11 @@ int					get_next_line(int const fd, char **line);
 
 typedef struct		s_read
 {
-	int				size; //Old Naming replace by len
+	//int				size; //Old Naming replace by len
 	int				len;
 	int				index;
 	int				fd;
+	int				status;
 	char			*read;
 	struct s_read	*next;
 }					t_read;
