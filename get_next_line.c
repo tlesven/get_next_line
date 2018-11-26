@@ -6,7 +6,7 @@
 /*   By: tlesven <tlesven@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/04/16 12:48:44 by tlesven           #+#    #+#             */
-/*   Updated: 2018/11/26 14:36:16 by tlesven          ###   ########.fr       */
+/*   Updated: 2018/11/26 15:00:09 by tlesven          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,6 @@
 #include <stdlib.h>
 #include "get_next_line.h"
 #include "libft.h"
-
-void				ft_freeeread(t_read *fdlst)
-{
-	ft_strdel(&fdlst->read);
-	free(fdlst);
-	fdlst = NULL;
-}
 
 void				ft_newread(t_read *fdlst)
 {
